@@ -3,6 +3,7 @@
 #include "common.h"
 #include "timer.h"
 #include "i2c.h"
+#include "uart.h"
 #include <stdio.h>
 
 #define True 1
@@ -176,7 +177,10 @@ void updateWiimote(){
     writeI2C(Wiimote.i2c, cmd2, 1);
     readI2C(Wiimote.i2c, readBuf, 4);
     extractWiimoteData(Wiimote.data,readBuf);
-    printf("extracted data: x: %u y: %u \n", Wiimote.data->x,Wiimote.data->y);
+    printf("extracted data: x: %u y: %u \n", Wiimote.data[0].x,Wiimote.data[0].y);
+    printf("extracted data: x: %u y: %u \n", Wiimote.data[1].x,Wiimote.data[1].y);
+    printf("extracted data: x: %u y: %u \n", Wiimote.data[2].x,Wiimote.data[2].y);
+    printf("extracted data: x: %u y: %u \n", Wiimote.data[3].x,Wiimote.data[3].y);
 }
 
 int16_t main(void) {
@@ -192,6 +196,8 @@ int16_t main(void) {
     timer_setPeriod(&timer1,1e-2);//100 Hz
     timer_lower(&timer1);
     timer_start(&timer1);
+
+    printf("Begin");
 
     while (True) {
         if (timer_flag(&timer1)){
