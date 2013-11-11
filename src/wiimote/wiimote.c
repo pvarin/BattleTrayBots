@@ -176,6 +176,7 @@ void updateWiimote(){
     writeI2C(Wiimote.i2c, cmd2, 1);
     readI2C(Wiimote.i2c, readBuf, 4);
     extractWiimoteData(Wiimote.data,readBuf);
+    printf("extracted data: x: %u y: %u \n", Wiimote.data->x,Wiimote.data->y);
 }
 
 int16_t main(void) {
