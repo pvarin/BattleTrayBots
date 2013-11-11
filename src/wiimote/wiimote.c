@@ -183,6 +183,7 @@ int16_t main(void) {
     //initialize modules
     init_clock();
     init_timer();
+    init_uart();
 
     //setup the i2c line at 9600 baud
     initWiimote();
