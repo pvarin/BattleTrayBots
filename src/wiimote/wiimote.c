@@ -3,6 +3,7 @@
 #include "common.h"
 #include "timer.h"
 #include "i2c.h"
+#include "pin.h"
 #include "uart.h"
 #include <stdio.h>
 
@@ -105,6 +106,7 @@ void startWiimote(){
     //start the timer
     timer_setPeriod(Wiimote.timer, 0.1);
     timer_start(Wiimote.timer);
+
     uint8_t cmd1 [3] = {Wiimote.addr, 0x30, 0x01};
     uint8_t cmd2 [9] = {Wiimote.addr, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x90};
     uint8_t cmd3 [4] = {Wiimote.addr, 0x07, 0x00, 0x41};
@@ -165,7 +167,9 @@ void updateWiimote(){
     //prepare to read
     writeI2C(Wiimote.i2c, cmd1, 2);
     //wait 25us
+    printf("test1\n");
     wait(Wiimote.timer,25e-6);
+    printf("test2\n");
     //read request
     writeI2C(Wiimote.i2c, cmd2, 1);
     readI2C(Wiimote.i2c, readBuf, 8);
@@ -173,9 +177,12 @@ void updateWiimote(){
     extractWiimoteData(Wiimote.data,&(readBuf[4]));
     //wait 380us
     wait(Wiimote.timer,380e-6);
+    printf("test3\n");
     //read more data
     writeI2C(Wiimote.i2c, cmd2, 1);
+    printf("test4");
     readI2C(Wiimote.i2c, readBuf, 4);
+    printf("test5\n");
     extractWiimoteData(Wiimote.data,readBuf);
     printf("extracted data: x: %u y: %u \n", Wiimote.data[0].x,Wiimote.data[0].y);
     printf("extracted data: x: %u y: %u \n", Wiimote.data[1].x,Wiimote.data[1].y);
@@ -188,6 +195,7 @@ int16_t main(void) {
     init_clock();
     init_timer();
     init_uart();
+    init_i2c();
 
     //setup the i2c line at 9600 baud
     initWiimote();
@@ -201,6 +209,7 @@ int16_t main(void) {
 
     while (True) {
         if (timer_flag(&timer1)){
+            printf("Main");
             updateWiimote();
             timer_lower(&timer1);
         }
