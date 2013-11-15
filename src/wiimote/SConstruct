@@ -19,7 +19,7 @@ list = Builder(action = 'xc16-objdump -S -D $SOURCE > $TARGET',
                src_suffix = 'elf')
 env.Append(BUILDERS = {'List' : list})
 
-env.Program('wiimote', ['wiimote.c',
+env.Program('wiimote', ['simpleWiimote.c',
                          '../../lib/pin.c',
                          '../../lib/uart.c',
                          '../../lib/timer.c',

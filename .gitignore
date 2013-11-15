@@ -3,3 +3,4 @@
 *.hex
 *.elf
 .sconsign.dblite
+.pyc
