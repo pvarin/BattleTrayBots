@@ -25,7 +25,7 @@ int16_t main(void) {
     init_wiimote();
     
     //setup the main loop to execute at 100Hz
-    timer_setPeriod(&timer1,1e-2);
+    timer_setPeriod(&timer1,5e-1);
     timer_lower(&timer1);
     timer_start(&timer1);
 
@@ -41,7 +41,7 @@ int16_t main(void) {
 void read_wiimote(void){
     uint8_t i;
     uint8_t buf[12];
-    
+
     i2c_start(&i2c1);
     i2c_putc(&i2c1, 0xB0); i2c_idle(&i2c1);
     i2c_putc(&i2c1, 0x37); i2c_idle(&i2c1);
@@ -57,7 +57,11 @@ void read_wiimote(void){
     i2c_putc(&i2c1, 0xB1); i2c_idle(&i2c1);
     for (i=0; i<8; i++){
         buf[i] = i2c_getc(&i2c1);
-        i2c_ack(&i2c1); i2c_idle(&i2c1);
+        if (i==7)
+            i2c_nak(&i2c1);
+        else
+            i2c_ack(&i2c1);
+        i2c_idle(&i2c1);
         printf("\tData: %i\n",buf[i]);
     }
     i2c_stop(&i2c1);
@@ -72,7 +76,11 @@ void read_wiimote(void){
     i2c_putc(&i2c1, 0xB1); i2c_idle(&i2c1);
     for (i=8; i<12; i++){
         buf[i] = i2c_getc(&i2c1);
-        i2c_ack(&i2c1); i2c_idle(&i2c1);
+        if (i==11)
+            i2c_nak(&i2c1);
+        else
+            i2c_ack(&i2c1);
+        i2c_idle(&i2c1);
         printf("\tData: %i\n",buf[i]);
     }
     i2c_stop(&i2c1);
@@ -140,9 +148,19 @@ void init_wiimote(void){
 
     i2c_start(&i2c1);
     i2c_putc(&i2c1, 0xB0); i2c_idle(&i2c1);
+    i2c_putc(&i2c1, 0x33); i2c_idle(&i2c1);
+    i2c_putc(&i2c1, 0x03); i2c_idle(&i2c1);
+    i2c_stop(&i2c1);
+    
+    //wait 100ms
+    timer_setPeriod(&timer5, 0.1); timer_start(&timer5);
+    while(!timer_flag(&timer5)){};
+    timer_lower(&timer5); timer_stop(&timer5);
+
+    i2c_start(&i2c1);
+    i2c_putc(&i2c1, 0xB0); i2c_idle(&i2c1);
     i2c_putc(&i2c1, 0x30); i2c_idle(&i2c1);
     i2c_putc(&i2c1, 0x08); i2c_idle(&i2c1);
     i2c_stop(&i2c1);
-    
     printf("Successfully initialized the WiiMote camera\n");
 }
