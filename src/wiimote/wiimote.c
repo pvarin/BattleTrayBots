@@ -25,6 +25,7 @@ void wait(_TIMER* timer, float waitTime){
     timer_start(timer);
     while(!timer_flag(timer)){}
     timer_stop(timer);
+    timer_lower(timer);
 }
 
 /*********************************
@@ -41,7 +42,10 @@ void readI2C(_I2C *self, uint8_t *data, uint16_t len){
     uint16_t i;
     for (i=0; i<len; i++){
         data[0] = i2c_getc(self);
-        i2c_ack(self);  //acknowledge reciept
+        if (i==len-1)
+            i2c_nak(self);
+        else
+            i2c_ack(self);  //acknowledge reciept
         i2c_idle(self); //wait until the line goes quiet
     }
 }

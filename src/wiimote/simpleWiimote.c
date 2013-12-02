@@ -62,10 +62,23 @@ void read_wiimote(void){
         else
             i2c_ack(&i2c1);
         i2c_idle(&i2c1);
-        printf("\tData: %i\n",buf[i]);
     }
+
     i2c_stop(&i2c1);
     i2c_idle(&i2c1);
+    
+
+    uint16_t x, y, size;
+    for (i=0;i<4;i++){
+        x = buf[i*3];
+        y = buf[i*3+1];
+        x += (buf[i*3+2] << 2) & 0x300;
+        y += (buf[i*3+2] << 4) & 0xC00;
+        size = buf[i*3+2] & 0xF;
+
+        printf("\t[%i] (%i, %i) %i\n",i,x,y,size);
+    
+    }
 
     //TODO wait
     timer_setPeriod(&timer5, 380e-6); timer_start(&timer5);
